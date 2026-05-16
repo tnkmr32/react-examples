@@ -43,6 +43,17 @@ const categories: Category[] = [
         ),
         url: "/todo",
       },
+      {
+        name: "ユーザー登録",
+        description: (
+          <p>
+            ユーザー登録画面の実装例です。
+            <br />
+            フォームバリデーションの実装を知ることができます。
+          </p>
+        ),
+        url: "/register-user",
+      },
     ],
   },
 ];
