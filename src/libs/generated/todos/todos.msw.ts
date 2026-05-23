@@ -18,15 +18,15 @@ import type {
   Todo
 } from '.././model'
 
-export const getListTodoResponseMock = (): ListTodoResponse => (Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({assignee: faker.word.sample(), description: faker.word.sample(), id: faker.word.sample(), title: faker.word.sample()})))
+export const getListTodoResponseMock = (): ListTodoResponse => ([{"id":"id-0","title":"title-0","description":"title-0","assignee":"person-0"},{"id":"id-1","title":"title-1","description":"title-1","assignee":"person-1"},{"id":"id-2","title":"title-2","description":"title-2","assignee":"person-2"}])
 
 export const getPostTodoResponseMock = (overrideResponse: Partial< Todo > = {}): Todo => ({assignee: faker.word.sample(), description: faker.word.sample(), id: faker.word.sample(), title: faker.word.sample(), ...overrideResponse})
 
-export const getGetTodoResponseMock = (overrideResponse: Partial< Todo > = {}): Todo => ({assignee: faker.word.sample(), description: faker.word.sample(), id: faker.word.sample(), title: faker.word.sample(), ...overrideResponse})
+export const getGetTodoResponseMock = (): Todo => ({"id":"id-0","title":"title-0","description":"title-0","assignee":"person-0"})
 
-export const getPutTodoResponseMock = (overrideResponse: Partial< Todo > = {}): Todo => ({assignee: faker.word.sample(), description: faker.word.sample(), id: faker.word.sample(), title: faker.word.sample(), ...overrideResponse})
+export const getPutTodoResponseMock = (): Todo => ({"id":"id-0","title":"title-0","description":"title-0","assignee":"person-0"})
 
-export const getDeleteTodoResponseMock = (overrideResponse: Partial< Todo > = {}): Todo => ({assignee: faker.word.sample(), description: faker.word.sample(), id: faker.word.sample(), title: faker.word.sample(), ...overrideResponse})
+export const getDeleteTodoResponseMock = (): Todo => ({"id":"id-0","title":"title-0","description":"title-0","assignee":"person-0"})
 
 
 export const getListTodoMockHandler = (overrideResponse?: ListTodoResponse | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<ListTodoResponse> | ListTodoResponse)) => {

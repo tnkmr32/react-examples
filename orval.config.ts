@@ -12,6 +12,7 @@ export default defineConfig({
       mock: {
         type: "msw",
         baseUrl: "http://localhost:8080",
+        useExamples: true,
       },
       override: {
         query: {
