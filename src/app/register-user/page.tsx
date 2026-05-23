@@ -1,6 +1,14 @@
 "use client";
 
-import { AxButton, AxTableLayout } from "@/framework/components/antd";
+import {
+  AxButton,
+  AxCheckBox,
+  AxInputDate,
+  AxInputText,
+  AxRadioBox,
+  AxSelectBox,
+  AxTextArea,
+} from "@/framework/components/antd";
 import {
   CsInputDateItem,
   CsInputTextItem,
@@ -20,7 +28,7 @@ import {
   useCsView,
   useInit,
 } from "@/framework/logics";
-import { Card, Space, message } from "antd";
+import { Card, Space, message, Row, Col, Table } from "antd";
 import { useRouter } from "next/navigation";
 import dayjs from "dayjs";
 
@@ -127,12 +135,149 @@ const RegisterUser = () => {
         title="ユーザー登録"
         style={{ maxWidth: "800px", margin: "0 auto" }}
       >
-        <AxTableLayout
-          view={view}
-          colSize={1}
-          labelPlacement="left"
-          labelWidth={20}
-        />
+        <div
+          style={{
+            border: "1px solid #d9d9d9",
+            borderRadius: "4px",
+          }}
+        >
+          <Row
+            style={{
+              borderBottom: "1px solid #d9d9d9",
+            }}
+          >
+            <Col
+              span={6}
+              style={{
+                padding: "12px 16px",
+                backgroundColor: "#fafafa",
+                borderRight: "1px solid #d9d9d9",
+                fontWeight: 500,
+              }}
+            >
+              姓
+            </Col>
+            <Col span={18} style={{ padding: "12px 16px" }}>
+              <AxInputText item={view.lastName} hideLabel />
+            </Col>
+          </Row>
+          <Row
+            style={{
+              borderBottom: "1px solid #d9d9d9",
+            }}
+          >
+            <Col
+              span={6}
+              style={{
+                padding: "12px 16px",
+                backgroundColor: "#fafafa",
+                borderRight: "1px solid #d9d9d9",
+                fontWeight: 500,
+              }}
+            >
+              名
+            </Col>
+            <Col span={18} style={{ padding: "12px 16px" }}>
+              <AxInputText item={view.firstName} hideLabel />
+            </Col>
+          </Row>
+          <Row
+            style={{
+              borderBottom: "1px solid #d9d9d9",
+            }}
+          >
+            <Col
+              span={6}
+              style={{
+                padding: "12px 16px",
+                backgroundColor: "#fafafa",
+                borderRight: "1px solid #d9d9d9",
+                fontWeight: 500,
+              }}
+            >
+              性別
+            </Col>
+            <Col span={18} style={{ padding: "12px 16px" }}>
+              <AxRadioBox item={view.gender} hideLabel />
+            </Col>
+          </Row>
+          <Row
+            style={{
+              borderBottom: "1px solid #d9d9d9",
+            }}
+          >
+            <Col
+              span={6}
+              style={{
+                padding: "12px 16px",
+                backgroundColor: "#fafafa",
+                borderRight: "1px solid #d9d9d9",
+                fontWeight: 500,
+              }}
+            >
+              生年月日
+            </Col>
+            <Col span={18} style={{ padding: "12px 16px" }}>
+              <AxInputDate item={view.birthDate} hideLabel />
+            </Col>
+          </Row>
+          <Row
+            style={{
+              borderBottom: "1px solid #d9d9d9",
+            }}
+          >
+            <Col
+              span={6}
+              style={{
+                padding: "12px 16px",
+                backgroundColor: "#fafafa",
+                borderRight: "1px solid #d9d9d9",
+                fontWeight: 500,
+              }}
+            >
+              所属部署
+            </Col>
+            <Col span={18} style={{ padding: "12px 16px" }}>
+              <AxSelectBox item={view.department} hideLabel />
+            </Col>
+          </Row>
+          <Row
+            style={{
+              borderBottom: "1px solid #d9d9d9",
+            }}
+          >
+            <Col
+              span={6}
+              style={{
+                padding: "12px 16px",
+                backgroundColor: "#fafafa",
+                borderRight: "1px solid #d9d9d9",
+                fontWeight: 500,
+              }}
+            >
+              役職
+            </Col>
+            <Col span={18} style={{ padding: "12px 16px" }}>
+              <AxInputText item={view.position} hideLabel />
+            </Col>
+          </Row>
+          <Row>
+            <Col
+              span={6}
+              style={{
+                padding: "12px 16px",
+                backgroundColor: "#fafafa",
+                borderRight: "1px solid #d9d9d9",
+                fontWeight: 500,
+              }}
+            >
+              備考
+            </Col>
+            <Col span={18} style={{ padding: "12px 16px" }}>
+              <AxTextArea item={view.remarks} hideLabel />
+            </Col>
+          </Row>
+        </div>
         <div style={{ marginTop: "24px", textAlign: "center" }}>
           <Space size="middle">
             <AxButton onClick={handleCancel}>キャンセル</AxButton>
