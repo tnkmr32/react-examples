@@ -2,7 +2,6 @@
 
 import {
   AxButton,
-  AxCheckBox,
   AxInputDate,
   AxInputText,
   AxRadioBox,
@@ -28,7 +27,7 @@ import {
   useCsView,
   useInit,
 } from "@/framework/logics";
-import { Card, Space, message, Row, Col, Table } from "antd";
+import { Card, Space, message, Row, Col } from "antd";
 import { useRouter } from "next/navigation";
 import dayjs from "dayjs";
 
