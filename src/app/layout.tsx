@@ -1,32 +1,39 @@
-import type { Metadata } from "next";
-import localFont from "next/font/local";
+"use client";
+
+import { useEffect } from "react";
+import { AntdRegistry } from "@ant-design/nextjs-registry";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "./globals.css";
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
+// QueryClientのインスタンスを作成
+const queryClient = new QueryClient();
 
-export const metadata: Metadata = {
-  title: "react-examples",
-  description: "A collection of react implementation examples.",
-};
+// MSWプロバイダーコンポーネント
+function MSWProvider({ children }: { children: React.ReactNode }) {
+  useEffect(() => {
+    if (process.env.NODE_ENV === "development") {
+      import("@/mocks/init").then(({ initMocks }) => {
+        initMocks();
+      });
+    }
+  }, []);
+
+  return <>{children}</>;
+}
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        {children}
+    <html lang="ja">
+      <body>
+        <MSWProvider>
+          <QueryClientProvider client={queryClient}>
+            <AntdRegistry>{children}</AntdRegistry>
+          </QueryClientProvider>
+        </MSWProvider>
       </body>
     </html>
   );

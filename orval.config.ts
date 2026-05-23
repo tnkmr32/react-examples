@@ -9,6 +9,10 @@ export default defineConfig({
       schemas: "src/libs/generated/model",
       client: "react-query",
       tsconfig: "tsconfig.json",
+      mock: {
+        type: "msw",
+        baseUrl: "http://localhost:8080",
+      },
       override: {
         query: {
           useQuery: true,
