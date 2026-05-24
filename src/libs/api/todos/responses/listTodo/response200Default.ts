@@ -1,12 +1,7 @@
 import type { ListTodoResponse } from "../../../model";
-import { HttpResponseInit } from "msw";
+import type { MockResponse } from "../types";
 
-type response = {
-  body: ListTodoResponse;
-  init: HttpResponseInit;
-};
-
-export const response200Default: response = {
+export const response200Default: MockResponse<ListTodoResponse> = {
   body: [
     {
       id: "id-0",

@@ -1,12 +1,7 @@
 import type { ListTodoResponse } from "../../../model";
-import { HttpResponseInit } from "msw";
+import type { MockResponse } from "../types";
 
-type response = {
-  body: ListTodoResponse;
-  init: HttpResponseInit;
-};
-
-export const response200LargeTodos: response = {
+export const response200LargeTodos: MockResponse<ListTodoResponse> = {
   body: Array.from({ length: 50 }, (_, i) => ({
     id: (i + 1).toString(),
     title: `タスク ${i + 1}`,
