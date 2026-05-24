@@ -11,6 +11,7 @@ import { HttpResponse, http } from "msw";
 import { Todo } from "@/libs/api/model";
 import { response200Custom } from "@/libs/api/todos/responses/listTodo/response200Custom";
 import { response200Empty } from "@/libs/api/todos/responses/listTodo/response200Empty";
+import { response200LargeTodos } from "@/libs/api/todos/responses/listTodo/response200LargeTodos";
 
 /**
  * TODOリストの一覧表示、検索、追加、編集、削除の機能を持つページコンポーネントです。
@@ -71,19 +72,31 @@ export const WithCustomData: Story = {
   parameters: {
     msw: {
       handlers: [
-        getListTodoMockHandler(response200Custom.body, 0),
+        getListTodoMockHandler(response200Custom, 0),
         getPostTodoMockHandler(async (info) => {
-          const body = (await info.request.json()) as Omit<Todo, "id">;
+          const requestBody = (await info.request.json()) as Omit<Todo, "id">;
           return {
-            id: (response200Custom.body.length + 1).toString(),
-            ...body,
+            body: {
+              id: (response200Custom.body.length + 1).toString(),
+              ...requestBody,
+            },
+            init: {
+              status: 200,
+              headers: { "Content-Type": "application/json" },
+            },
           };
         }, 0),
         getPutTodoMockHandler(async (info) => {
-          const body = (await info.request.json()) as Omit<Todo, "id">;
+          const requestBody = (await info.request.json()) as Omit<Todo, "id">;
           return {
-            id: info.params.todoId as string,
-            ...body,
+            body: {
+              id: info.params.todoId as string,
+              ...requestBody,
+            },
+            init: {
+              status: 200,
+              headers: { "Content-Type": "application/json" },
+            },
           };
         }, 0),
         getDeleteTodoMockHandler(undefined, 0),
@@ -100,12 +113,18 @@ export const Empty: Story = {
   parameters: {
     msw: {
       handlers: [
-        getListTodoMockHandler(response200Empty.body, 0),
+        getListTodoMockHandler(response200Empty, 0),
         getPostTodoMockHandler(async (info) => {
-          const body = (await info.request.json()) as Omit<Todo, "id">;
+          const requestBody = (await info.request.json()) as Omit<Todo, "id">;
           return {
-            id: "1",
-            ...body,
+            body: {
+              id: "1",
+              ...requestBody,
+            },
+            init: {
+              status: 200,
+              headers: { "Content-Type": "application/json" },
+            },
           };
         }, 0),
       ],
@@ -121,15 +140,7 @@ export const LargeDataset: Story = {
   parameters: {
     msw: {
       handlers: [
-        getListTodoMockHandler(() => {
-          const largeTodos: Todo[] = Array.from({ length: 50 }, (_, i) => ({
-            id: (i + 1).toString(),
-            title: `タスク ${i + 1}`,
-            description: `これはタスク${i + 1}の詳細な説明です。この説明は複数行にわたる可能性があります。`,
-            assignee: ["山田太郎", "田中花子", "佐藤次郎", "鈴木一郎"][i % 4],
-          }));
-          return largeTodos;
-        }, 0),
+        getListTodoMockHandler(response200LargeTodos, 0),
         getPostTodoMockHandler(undefined, 0),
         getPutTodoMockHandler(undefined, 0),
         getDeleteTodoMockHandler(undefined, 0),
@@ -154,10 +165,22 @@ export const WithFiltering: Story = {
             const filtered = response200Custom.body.filter(
               (todo) => todo.assignee === assigneeEq,
             );
-            return filtered;
+            return {
+              body: filtered,
+              init: {
+                status: 200,
+                headers: { "Content-Type": "application/json" },
+              },
+            };
           }
 
-          return response200Custom.body;
+          return {
+            body: response200Custom.body,
+            init: {
+              status: 200,
+              headers: { "Content-Type": "application/json" },
+            },
+          };
         }, 0),
         getPostTodoMockHandler(undefined, 0),
         getPutTodoMockHandler(undefined, 0),
@@ -199,7 +222,13 @@ export const WithLongLoading: Story = {
       handlers: [
         getListTodoMockHandler(async () => {
           await new Promise((resolve) => setTimeout(resolve, 10000));
-          return response200Custom.body;
+          return {
+            body: response200Custom.body,
+            init: {
+              status: 200,
+              headers: { "Content-Type": "application/json" },
+            },
+          };
         }),
       ],
     },

@@ -67,8 +67,7 @@ const createMockHandler = <T>(
       response = defaultResponse;
     }
 
-    const responseInit = response.init;
-    return new HttpResponse(JSON.stringify(response.body), responseInit);
+    return new HttpResponse(JSON.stringify(response.body), response.init);
   });
 };
 
