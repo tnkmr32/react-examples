@@ -5,93 +5,200 @@
  * OpenAPI for example of React Cost Savings Component
  * OpenAPI spec version: 1.0.0
  */
-import {
-  faker
-} from '@faker-js/faker'
-import {
-  HttpResponse,
-  delay,
-  http
-} from 'msw'
-import type {
-  ListTodoResponse,
-  Todo
-} from '.././model'
+import { faker } from "@faker-js/faker";
+import { HttpResponse, delay, http } from "msw";
+import type { ListTodoResponse, Todo } from ".././model";
 
-export const getListTodoResponseMock = (): ListTodoResponse => ([{"id":"id-0","title":"title-0","description":"title-0","assignee":"person-0"},{"id":"id-1","title":"title-1","description":"title-1","assignee":"person-1"},{"id":"id-2","title":"title-2","description":"title-2","assignee":"person-2"}])
+export const getListTodoResponseMock = (): ListTodoResponse => [
+  {
+    id: "id-0",
+    title: "title-0",
+    description: "title-0",
+    assignee: "person-0",
+  },
+  {
+    id: "id-1",
+    title: "title-1",
+    description: "title-1",
+    assignee: "person-1",
+  },
+  {
+    id: "id-2",
+    title: "title-2",
+    description: "title-2",
+    assignee: "person-2",
+  },
+];
 
-export const getPostTodoResponseMock = (overrideResponse: Partial< Todo > = {}): Todo => ({assignee: faker.word.sample(), description: faker.word.sample(), id: faker.word.sample(), title: faker.word.sample(), ...overrideResponse})
+export const getPostTodoResponseMock = (
+  overrideResponse: Partial<Todo> = {},
+): Todo => ({
+  assignee: faker.word.sample(),
+  description: faker.word.sample(),
+  id: faker.word.sample(),
+  title: faker.word.sample(),
+  ...overrideResponse,
+});
 
-export const getGetTodoResponseMock = (): Todo => ({"id":"id-0","title":"title-0","description":"title-0","assignee":"person-0"})
+export const getGetTodoResponseMock = (): Todo => ({
+  id: "id-0",
+  title: "title-0",
+  description: "title-0",
+  assignee: "person-0",
+});
 
-export const getPutTodoResponseMock = (): Todo => ({"id":"id-0","title":"title-0","description":"title-0","assignee":"person-0"})
+export const getPutTodoResponseMock = (): Todo => ({
+  id: "id-0",
+  title: "title-0",
+  description: "title-0",
+  assignee: "person-0",
+});
 
-export const getDeleteTodoResponseMock = (): Todo => ({"id":"id-0","title":"title-0","description":"title-0","assignee":"person-0"})
+export const getDeleteTodoResponseMock = (): Todo => ({
+  id: "id-0",
+  title: "title-0",
+  description: "title-0",
+  assignee: "person-0",
+});
 
+/**
+ * 共通のモックハンドラー作成関数
+ * @param method HTTPメソッド
+ * @param url エンドポイントURL
+ * @param defaultMockFn デフォルトのモックレスポンスを返す関数
+ * @param statusCode レスポンスのステータスコード
+ * @param delayTime レスポンスの遅延時間（ミリ秒）
+ * @param overrideResponse レスポンスを上書きする値または関数
+ */
+const createMockHandler = <T>(
+  method: "get" | "post" | "put" | "delete",
+  url: string,
+  defaultMockFn: () => T,
+  statusCode: number = 200,
+  delayTime: number = 1000,
+  overrideResponse?:
+    | T
+    | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<T> | T),
+) => {
+  const httpMethod = http[method];
+  return httpMethod(url, async (info) => {
+    await delay(delayTime);
 
-export const getListTodoMockHandler = (overrideResponse?: ListTodoResponse | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<ListTodoResponse> | ListTodoResponse)) => {
-  return http.get('http://localhost:8080/todos', async (info) => {await delay(1000);
-  
-    return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
-            ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
-            : getListTodoResponseMock()),
-      { status: 200,
-        headers: { 'Content-Type': 'application/json' }
-      })
-  })
-}
+    let responseData: T;
+    if (overrideResponse !== undefined) {
+      if (typeof overrideResponse === "function") {
+        responseData = await (
+          overrideResponse as (
+            info: Parameters<Parameters<typeof http.get>[1]>[0],
+          ) => Promise<T> | T
+        )(info);
+      } else {
+        responseData = overrideResponse;
+      }
+    } else {
+      responseData = defaultMockFn();
+    }
 
-export const getPostTodoMockHandler = (overrideResponse?: Todo | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<Todo> | Todo)) => {
-  return http.post('http://localhost:8080/todos', async (info) => {await delay(1000);
-  
-    return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
-            ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
-            : getPostTodoResponseMock()),
-      { status: 200,
-        headers: { 'Content-Type': 'application/json' }
-      })
-  })
-}
+    return new HttpResponse(JSON.stringify(responseData), {
+      status: statusCode,
+      headers: { "Content-Type": "application/json" },
+    });
+  });
+};
 
-export const getGetTodoMockHandler = (overrideResponse?: Todo | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<Todo> | Todo)) => {
-  return http.get('http://localhost:8080/todos/:todoId', async (info) => {await delay(1000);
-  
-    return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
-            ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
-            : getGetTodoResponseMock()),
-      { status: 200,
-        headers: { 'Content-Type': 'application/json' }
-      })
-  })
-}
+export const getListTodoMockHandler = (
+  overrideResponse?:
+    | ListTodoResponse
+    | ((
+        info: Parameters<Parameters<typeof http.get>[1]>[0],
+      ) => Promise<ListTodoResponse> | ListTodoResponse),
+  delayTime: number = 1000,
+) => {
+  return createMockHandler<ListTodoResponse>(
+    "get",
+    "http://localhost:8080/todos",
+    getListTodoResponseMock,
+    200,
+    delayTime,
+    overrideResponse,
+  );
+};
 
-export const getPutTodoMockHandler = (overrideResponse?: Todo | ((info: Parameters<Parameters<typeof http.put>[1]>[0]) => Promise<Todo> | Todo)) => {
-  return http.put('http://localhost:8080/todos/:todoId', async (info) => {await delay(1000);
-  
-    return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
-            ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
-            : getPutTodoResponseMock()),
-      { status: 200,
-        headers: { 'Content-Type': 'application/json' }
-      })
-  })
-}
+export const getPostTodoMockHandler = (
+  overrideResponse?:
+    | Todo
+    | ((
+        info: Parameters<Parameters<typeof http.post>[1]>[0],
+      ) => Promise<Todo> | Todo),
+  delayTime: number = 1000,
+) => {
+  return createMockHandler<Todo>(
+    "post",
+    "http://localhost:8080/todos",
+    getPostTodoResponseMock,
+    200,
+    delayTime,
+    overrideResponse,
+  );
+};
 
-export const getDeleteTodoMockHandler = (overrideResponse?: Todo | ((info: Parameters<Parameters<typeof http.delete>[1]>[0]) => Promise<Todo> | Todo)) => {
-  return http.delete('http://localhost:8080/todos/:todoId', async (info) => {await delay(1000);
-  
-    return new HttpResponse(JSON.stringify(overrideResponse !== undefined 
-            ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse) 
-            : getDeleteTodoResponseMock()),
-      { status: 204,
-        headers: { 'Content-Type': 'application/json' }
-      })
-  })
-}
+export const getGetTodoMockHandler = (
+  overrideResponse?:
+    | Todo
+    | ((
+        info: Parameters<Parameters<typeof http.get>[1]>[0],
+      ) => Promise<Todo> | Todo),
+  delayTime: number = 1000,
+) => {
+  return createMockHandler<Todo>(
+    "get",
+    "http://localhost:8080/todos/:todoId",
+    getGetTodoResponseMock,
+    200,
+    delayTime,
+    overrideResponse,
+  );
+};
+
+export const getPutTodoMockHandler = (
+  overrideResponse?:
+    | Todo
+    | ((
+        info: Parameters<Parameters<typeof http.put>[1]>[0],
+      ) => Promise<Todo> | Todo),
+  delayTime: number = 1000,
+) => {
+  return createMockHandler<Todo>(
+    "put",
+    "http://localhost:8080/todos/:todoId",
+    getPutTodoResponseMock,
+    200,
+    delayTime,
+    overrideResponse,
+  );
+};
+
+export const getDeleteTodoMockHandler = (
+  overrideResponse?:
+    | Todo
+    | ((
+        info: Parameters<Parameters<typeof http.delete>[1]>[0],
+      ) => Promise<Todo> | Todo),
+  delayTime: number = 1000,
+) => {
+  return createMockHandler<Todo>(
+    "delete",
+    "http://localhost:8080/todos/:todoId",
+    getDeleteTodoResponseMock,
+    204,
+    delayTime,
+    overrideResponse,
+  );
+};
 export const getTodosMock = () => [
   getListTodoMockHandler(),
   getPostTodoMockHandler(),
   getGetTodoMockHandler(),
   getPutTodoMockHandler(),
-  getDeleteTodoMockHandler()
-]
+  getDeleteTodoMockHandler(),
+];

@@ -45,10 +45,10 @@ const meta: Meta<typeof TodoPage> = {
     },
     msw: {
       handlers: [
-        getListTodoMockHandler(),
-        getPostTodoMockHandler(),
-        getPutTodoMockHandler(),
-        getDeleteTodoMockHandler(),
+        getListTodoMockHandler(undefined, 0),
+        getPostTodoMockHandler(undefined, 0),
+        getPutTodoMockHandler(undefined, 0),
+        getDeleteTodoMockHandler(undefined, 0),
       ],
     },
   },
@@ -56,7 +56,6 @@ const meta: Meta<typeof TodoPage> = {
 
 export default meta;
 type Story = StoryObj<typeof meta>;
-
 
 /**
  * 基本的なTODOリストページのサンプル。
@@ -72,22 +71,22 @@ export const WithCustomData: Story = {
   parameters: {
     msw: {
       handlers: [
-        getListTodoMockHandler(response200Custom.body),
+        getListTodoMockHandler(response200Custom.body, 0),
         getPostTodoMockHandler(async (info) => {
           const body = (await info.request.json()) as Omit<Todo, "id">;
           return {
             id: (response200Custom.body.length + 1).toString(),
             ...body,
           };
-        }),
+        }, 0),
         getPutTodoMockHandler(async (info) => {
           const body = (await info.request.json()) as Omit<Todo, "id">;
           return {
             id: info.params.todoId as string,
             ...body,
           };
-        }),
-        getDeleteTodoMockHandler(),
+        }, 0),
+        getDeleteTodoMockHandler(undefined, 0),
       ],
     },
   },
@@ -101,14 +100,14 @@ export const Empty: Story = {
   parameters: {
     msw: {
       handlers: [
-        getListTodoMockHandler(response200Empty.body),
+        getListTodoMockHandler(response200Empty.body, 0),
         getPostTodoMockHandler(async (info) => {
           const body = (await info.request.json()) as Omit<Todo, "id">;
           return {
             id: "1",
             ...body,
           };
-        }),
+        }, 0),
       ],
     },
   },
@@ -130,10 +129,10 @@ export const LargeDataset: Story = {
             assignee: ["山田太郎", "田中花子", "佐藤次郎", "鈴木一郎"][i % 4],
           }));
           return largeTodos;
-        }),
-        getPostTodoMockHandler(),
-        getPutTodoMockHandler(),
-        getDeleteTodoMockHandler(),
+        }, 0),
+        getPostTodoMockHandler(undefined, 0),
+        getPutTodoMockHandler(undefined, 0),
+        getDeleteTodoMockHandler(undefined, 0),
       ],
     },
   },
@@ -159,10 +158,10 @@ export const WithFiltering: Story = {
           }
 
           return response200Custom.body;
-        }),
-        getPostTodoMockHandler(),
-        getPutTodoMockHandler(),
-        getDeleteTodoMockHandler(),
+        }, 0),
+        getPostTodoMockHandler(undefined, 0),
+        getPutTodoMockHandler(undefined, 0),
+        getDeleteTodoMockHandler(undefined, 0),
       ],
     },
   },

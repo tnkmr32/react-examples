@@ -19,9 +19,10 @@ export const getListTodoMockHandler = (
     | ((
         info: Parameters<Parameters<typeof http.get>[1]>[0],
       ) => Promise<ListTodoResponse> | ListTodoResponse),
+  delayTime: number = 1000,
 ) => {
   return http.get("http://localhost:8080/todos", async (info) => {
-    await delay(1000);
+    await delay(delayTime);
 
     return new HttpResponse(
       JSON.stringify(
@@ -42,9 +43,10 @@ export const getPostTodoMockHandler = (
     | ((
         info: Parameters<Parameters<typeof http.post>[1]>[0],
       ) => Promise<Todo> | Todo),
+  delayTime: number = 1000,
 ) => {
   return http.post("http://localhost:8080/todos", async (info) => {
-    await delay(1000);
+    await delay(delayTime);
 
     return new HttpResponse(
       JSON.stringify(
@@ -65,9 +67,10 @@ export const getGetTodoMockHandler = (
     | ((
         info: Parameters<Parameters<typeof http.get>[1]>[0],
       ) => Promise<Todo> | Todo),
+  delayTime: number = 1000,
 ) => {
   return http.get("http://localhost:8080/todos/:todoId", async (info) => {
-    await delay(1000);
+    await delay(delayTime);
 
     return new HttpResponse(
       JSON.stringify(
@@ -88,9 +91,10 @@ export const getPutTodoMockHandler = (
     | ((
         info: Parameters<Parameters<typeof http.put>[1]>[0],
       ) => Promise<Todo> | Todo),
+  delayTime: number = 1000,
 ) => {
   return http.put("http://localhost:8080/todos/:todoId", async (info) => {
-    await delay(1000);
+    await delay(delayTime);
 
     return new HttpResponse(
       JSON.stringify(
@@ -111,9 +115,10 @@ export const getDeleteTodoMockHandler = (
     | ((
         info: Parameters<Parameters<typeof http.delete>[1]>[0],
       ) => Promise<Todo> | Todo),
+  delayTime: number = 1000,
 ) => {
   return http.delete("http://localhost:8080/todos/:todoId", async (info) => {
-    await delay(1000);
+    await delay(delayTime);
 
     return new HttpResponse(
       JSON.stringify(
