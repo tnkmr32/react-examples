@@ -1,25 +1,12 @@
 "use client";
 
-import { useEffect } from "react";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { MSWProvider } from "@/bases/MSWProvider";
 import "./globals.css";
 
 // QueryClientのインスタンスを作成
 const queryClient = new QueryClient();
-
-// MSWプロバイダーコンポーネント
-function MSWProvider({ children }: { children: React.ReactNode }) {
-  useEffect(() => {
-    if (process.env.NODE_ENV === "development") {
-      import("@/mocks/init").then(({ initMocks }) => {
-        initMocks();
-      });
-    }
-  }, []);
-
-  return <>{children}</>;
-}
 
 export default function RootLayout({
   children,
