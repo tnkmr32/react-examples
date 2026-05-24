@@ -6,9 +6,9 @@ import {
   getPostTodoMockHandler,
   getPutTodoMockHandler,
   getDeleteTodoMockHandler,
-} from "@/libs/generated/todos/todos.msw";
+} from "@/libs/api/todos/todos.msw";
 import { HttpResponse } from "msw";
-import { Todo } from "@/libs/generated/model";
+import { Todo } from "@/libs/api/model";
 
 /**
  * TODOリストの一覧表示、検索、追加、編集、削除の機能を持つページコンポーネントです。

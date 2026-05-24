@@ -3,7 +3,7 @@ import { useTodoDeleteView } from "./page.view";
 import { AxButton, AxMutateButton } from "@/framework/components/antd";
 import { Modal, Space } from "antd";
 import { ExclamationCircleFilled } from "@ant-design/icons";
-import { Todo } from "@/libs/generated/model";
+import { Todo } from "@/libs/api/model";
 
 type Props = {
   record: Todo | null;

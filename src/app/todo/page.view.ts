@@ -17,17 +17,13 @@ import {
   useCsRqAdvancedQueryButtonClickEvent,
   useCsRqAdvancedQueryLoadEvent,
 } from "@/framework/logics/react-query-advanced/CsRqAdvancedEvent";
-import {
-  ListTodoResponse,
-  Todo,
-  TodoRegistration,
-} from "@/libs/generated/model";
+import { ListTodoResponse, Todo, TodoRegistration } from "@/libs/api/model";
 import {
   useDeleteTodo,
   useListTodo,
   usePostTodo,
   usePutTodo,
-} from "@/libs/generated/todos/todos";
+} from "@/libs/api/todos/todos";
 
 /**
  * 一覧取得用のView

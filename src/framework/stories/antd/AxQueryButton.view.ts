@@ -9,7 +9,7 @@ import {
   CsQueryButtonClickEvent,
 } from "@/framework/logics";
 import { useCsRqQueryButtonClickEvent } from "@/framework/logics/react-query/CsRQEvent";
-import { Todo } from "../libs/generated/model";
+import { Todo } from "../libs/api/model";
 import { useQuery } from "@tanstack/react-query";
 
 const fetchListTodo = (isSuccess: boolean) => {

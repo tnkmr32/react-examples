@@ -11,7 +11,7 @@ import {
   CsMutateButtonClickEvent,
 } from "@/framework/logics";
 import { useCsRqMutateButtonClickEvent } from "@/framework/logics/react-query/CsRQEvent";
-import { Todo, TodoRegistration } from "../libs/generated/model";
+import { Todo, TodoRegistration } from "../libs/api/model";
 import { useMutation } from "@tanstack/react-query";
 
 const postTodo = (isSuccess: boolean) => {
