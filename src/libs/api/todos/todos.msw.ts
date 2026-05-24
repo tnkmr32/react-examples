@@ -5,93 +5,14 @@
  * OpenAPI for example of React Cost Savings Component
  * OpenAPI spec version: 1.0.0
  */
-import { HttpResponse, delay, http } from "msw";
 import type { ListTodoResponse, Todo } from ".././model";
 import { response200Default as listTodoResponse200Default } from "./responses/listTodo/response200Default";
 import { response200Default as postTodoResponse200Default } from "./responses/postTodo/response200Default";
 import { response200Default as putTodoResponse200Default } from "./responses/putTodo/response200Default";
 import { response204Default as deleteTodoResponse204Default } from "./responses/deleteTodo/response204Default";
 import { response200Default as getTodoResponse200Default } from "./responses/getTodo/response200Default";
-
-/**
- * MSWのリクエストハンドラー情報の型
- * 全てのHTTPメソッド（get、post、put、delete）で共通の型
- */
-type HttpMethod = (typeof http)[keyof Pick<
-  typeof http,
-  "get" | "post" | "put" | "delete"
->];
-type MockHandlerInfo = Parameters<Parameters<HttpMethod>[1]>[0];
-
-/**
- * モックレスポンスの型
- * bodyとinitを持つオブジェクト形式のみ受け付ける
- */
-type MockResponse<T> = { body: T; init: ResponseInit };
-
-/**
- * overrideResponse の型
- */
-type OverrideResponse<T> =
-  | MockResponse<T>
-  | ((info: MockHandlerInfo) => Promise<MockResponse<T>> | MockResponse<T>);
-
-/**
- * 共通のモックハンドラー作成関数
- * @param method HTTPメソッド
- * @param url エンドポイントURL
- * @param defaultResponse デフォルトのモックレスポンス（bodyとinitを持つオブジェクト）
- * @param delayTime レスポンスの遅延時間（ミリ秒）
- * @param overrideResponse レスポンスを上書きする値または関数
- */
-const createMockHandler = <T>(
-  method: "get" | "post" | "put" | "delete",
-  url: string,
-  defaultResponse: { body: T; init: ResponseInit },
-  delayTime: number = 1000,
-  overrideResponse?: OverrideResponse<T>,
-) => {
-  const httpMethod = http[method];
-  return httpMethod(url, async (info) => {
-    await delay(delayTime);
-
-    let response: MockResponse<T>;
-
-    if (overrideResponse !== undefined) {
-      if (typeof overrideResponse === "function") {
-        response = await overrideResponse(info);
-      } else {
-        response = overrideResponse;
-      }
-    } else {
-      response = defaultResponse;
-    }
-
-    return new HttpResponse(JSON.stringify(response.body), response.init);
-  });
-};
-
-/**
- * モックハンドラー関数を生成するファクトリー
- * @param method HTTPメソッド
- * @param url エンドポイントURL
- * @param defaultResponse デフォルトのモックレスポンス
- */
-const createMockHandlerFactory = <T>(
-  method: "get" | "post" | "put" | "delete",
-  url: string,
-  defaultResponse: { body: T; init: ResponseInit },
-) => {
-  return (overrideResponse?: OverrideResponse<T>, delayTime: number = 1000) => {
-    return createMockHandler<T>(
-      method,
-      url,
-      defaultResponse,
-      delayTime,
-      overrideResponse,
-    );
-  };
-};
+import { createMockHandlerFactory } from "@/libs/api/msw/createMockHandlerFactory";
+import { createRestResourceHandlers } from "@/libs/api/msw/createRestResourceHandlers";
 
 export const getListTodoMockHandler =
   createMockHandlerFactory<ListTodoResponse>(
@@ -124,10 +45,29 @@ export const getDeleteTodoMockHandler = createMockHandlerFactory<Todo>(
   deleteTodoResponse204Default,
 );
 
-export const getTodosMock = () => [
-  getListTodoMockHandler(),
-  getPostTodoMockHandler(),
-  getGetTodoMockHandler(),
-  getPutTodoMockHandler(),
-  getDeleteTodoMockHandler(),
-];
+/**
+ * Todoリソースのモックハンドラーを生成
+ * RESTful APIパターンを使用し、/todosパスに対して統一されたデータストアを使用
+ */
+export const getTodosMock = () => {
+  return createRestResourceHandlers<Todo, ListTodoResponse>({
+    basePath: "/todos",
+    idParam: "todoId",
+    initialData: listTodoResponse200Default.body,
+    handlers: {
+      list: getListTodoMockHandler,
+      create: getPostTodoMockHandler,
+      get: getGetTodoMockHandler,
+      update: getPutTodoMockHandler,
+      delete: getDeleteTodoMockHandler,
+    },
+    // オプション: リスト取得時のフィルター処理
+    filterFn: (data, searchParams) => {
+      const assigneeEq = searchParams.get("assignee_eq");
+      if (assigneeEq) {
+        return data.filter((todo) => todo.assignee === assigneeEq);
+      }
+      return data;
+    },
+  });
+};
