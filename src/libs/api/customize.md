@@ -45,18 +45,18 @@ src/libs/api/
     └── responses/      # 🆕 レスポンスデータ管理
         ├── types.ts
         ├── listTodo/
-        │   ├── response200Default.ts
-        │   ├── response200Custom.ts
-        │   ├── response200Empty.ts
-        │   └── response200LargeTodos.ts
+        │   ├── listTodoResponse200Default.ts
+        │   ├── listTodoResponse200Custom.ts
+        │   ├── listTodoResponse200Empty.ts
+        │   └── listTodoResponse200LargeTodos.ts
         ├── postTodo/
-        │   └── response200Default.ts
+        │   └── postTodoResponse200Default.ts
         ├── getTodo/
-        │   └── response200Default.ts
+        │   └── getTodoResponse200Default.ts
         ├── putTodo/
-        │   └── response200Default.ts
+        │   └── putTodoResponse200Default.ts
         └── deleteTodo/
-            └── response204Default.ts
+            └── deleteTodoResponse204Default.ts
 ```
 
 ---
@@ -321,15 +321,21 @@ export type MockResponse<T> = {
 
 #### 3-2. 各エンドポイント・レスポンスごとにファイルを作成
 
-**基本パターン**: `src/libs/api/todos/responses/{operationId}/response{statusCode}{バリエーション}.ts`
+**命名規則**:
 
-**例: `src/libs/api/todos/responses/listTodo/response200Default.ts`**
+- **ファイル名**: `{operationId}Response{statusCode}{バリエーション}.ts`
+- **変数名**: ファイル名から `.ts` を除いた名前（例: `listTodoResponse200Default`）
+- **目的**: インポート時に `as` を使わず、変数名とファイル名を一致させて可読性を向上
+
+**基本パターン**: `src/libs/api/todos/responses/{operationId}/{operationId}Response{statusCode}{バリエーション}.ts`
+
+**例: `src/libs/api/todos/responses/listTodo/listTodoResponse200Default.ts`**
 
 ```typescript
 import type { ListTodoResponse } from "../../../model";
 import type { MockResponse } from "../types";
 
-export const response200Default: MockResponse<ListTodoResponse> = {
+export const listTodoResponse200Default: MockResponse<ListTodoResponse> = {
   body: [
     {
       id: "id-0",
@@ -354,25 +360,25 @@ export const response200Default: MockResponse<ListTodoResponse> = {
 };
 ```
 
-**例: `src/libs/api/todos/responses/listTodo/response200Empty.ts`**
+**例: `src/libs/api/todos/responses/listTodo/listTodoResponse200Empty.ts`**
 
 ```typescript
 import type { ListTodoResponse } from "../../../model";
 import type { MockResponse } from "../types";
 
-export const response200Empty: MockResponse<ListTodoResponse> = {
+export const listTodoResponse200Empty: MockResponse<ListTodoResponse> = {
   body: [],
   init: { status: 200, headers: { "Content-Type": "application/json" } },
 };
 ```
 
-**例: `src/libs/api/todos/responses/listTodo/response200Custom.ts`**
+**例: `src/libs/api/todos/responses/listTodo/listTodoResponse200Custom.ts`**
 
 ```typescript
 import type { ListTodoResponse } from "../../../model";
 import type { MockResponse } from "../types";
 
-export const response200Custom: MockResponse<ListTodoResponse> = {
+export const listTodoResponse200Custom: MockResponse<ListTodoResponse> = {
   body: [
     {
       id: "1",
@@ -428,11 +434,11 @@ export const getListTodoMockHandler = (overrideResponse?: ...) => {
  * OpenAPI spec version: 1.0.0
  */
 import type { ListTodoResponse, Todo } from ".././model";
-import { response200Default as listTodoResponse200Default } from "./responses/listTodo/response200Default";
-import { response200Default as postTodoResponse200Default } from "./responses/postTodo/response200Default";
-import { response200Default as putTodoResponse200Default } from "./responses/putTodo/response200Default";
-import { response204Default as deleteTodoResponse204Default } from "./responses/deleteTodo/response204Default";
-import { response200Default as getTodoResponse200Default } from "./responses/getTodo/response200Default";
+import { listTodoResponse200Default } from "./responses/listTodo/listTodoResponse200Default";
+import { postTodoResponse200Default } from "./responses/postTodo/postTodoResponse200Default";
+import { putTodoResponse200Default } from "./responses/putTodo/putTodoResponse200Default";
+import { deleteTodoResponse204Default } from "./responses/deleteTodo/deleteTodoResponse204Default";
+import { getTodoResponse200Default } from "./responses/getTodo/getTodoResponse200Default";
 import { createMockHandlerFactory } from "@/libs/api/msw/createMockHandlerFactory";
 import { createRestResourceHandlers } from "@/libs/api/msw/createRestResourceHandlers";
 
@@ -567,16 +573,14 @@ const handlers = [getListTodoMockHandler()];
 
 ```typescript
 // テストシナリオごとに異なるレスポンスを使用可能
-import { response200Empty } from "@/libs/api/todos/responses/listTodo/response200Empty";
-import { response200Custom } from "@/libs/api/todos/responses/listTodo/response200Custom";
+import { listTodoResponse200Empty } from "@/libs/api/todos/responses/listTodo/listTodoResponse200Empty";
+import { listTodoResponse200Custom } from "@/libs/api/todos/responses/listTodo/listTodoResponse200Custom";
 
 // 空のリストをテスト
-const emptyHandlers = [getListTodoMockHandler({ body: response200Empty.body })];
+const emptyHandlers = [getListTodoMockHandler(listTodoResponse200Empty)];
 
 // カスタムデータをテスト
-const customHandlers = [
-  getListTodoMockHandler({ body: response200Custom.body }),
-];
+const customHandlers = [getListTodoMockHandler(listTodoResponse200Custom)];
 ```
 
 ### 2. ステートフル操作のサポート
@@ -670,9 +674,9 @@ mkdir -p src/libs/api/{resource}/responses/{operationId}
 src/libs/api/users/responses/
 ├── types.ts
 ├── listUser/
-│   └── response200Default.ts
+│   └── listUserResponse200Default.ts
 ├── getUser/
-│   └── response200Default.ts
+│   └── getUserResponse200Default.ts
 └── ...
 ```
 
@@ -685,7 +689,7 @@ src/libs/api/users/responses/
 ```typescript
 import { createMockHandlerFactory } from "@/libs/api/msw/createMockHandlerFactory";
 import { createRestResourceHandlers } from "@/libs/api/msw/createRestResourceHandlers";
-import { response200Default as listResourceResponse200Default } from "./responses/listResource/response200Default";
+import { listResourceResponse200Default } from "./responses/listResource/listResourceResponse200Default";
 // ... 他のレスポンスをインポート
 
 export const getListResourceMockHandler =
@@ -733,5 +737,29 @@ find src -type f -name "*.ts" -o -name "*.tsx" | xargs sed -i '' 's|@/libs/gener
 3. **保守性の向上**: データとロジックの分離、汎用ユーティリティの活用
 4. **再利用性**: 汎用MSWユーティリティは他のプロジェクトでも使用可能
 5. **ローディング状態のテスト**: 全CRUD操作に1000msの遅延を設定し、UIのローディング状態を確認可能
+6. **命名規則の統一**: ファイル名と変数名を一致させることで、インポート時の `as` を不要にし、コードの可読性を向上
+
+### 命名規則のベストプラクティス
+
+レスポンスファイルでは以下の命名規則を採用しています：
+
+- **ファイル名**: `{operationId}Response{statusCode}{バリエーション}.ts`
+  - 例: `listTodoResponse200Default.ts`
+- **変数名**: ファイル名から `.ts` を除いた名前
+  - 例: `listTodoResponse200Default`
+
+この規則により、以下のメリットがあります：
+
+```typescript
+// ❌ 非推奨: インポート時に as を使用
+import { response200Default as listTodoResponse200Default } from "./responses/listTodo/response200Default";
+
+// ✅ 推奨: ファイル名と変数名が一致しているため、as が不要
+import { listTodoResponse200Default } from "./responses/listTodo/listTodoResponse200Default";
+```
+
+- 変数名から対応するファイルが明確
+- インポート文がシンプルで可読性が高い
+- エディタの自動補完やリファクタリングツールとの相性が良い
 
 別のプロジェクトでも同様の手順を適用することで、一貫したモック管理とテスト戦略を実現できます。

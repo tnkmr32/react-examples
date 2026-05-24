@@ -1,7 +1,7 @@
 import type { ListTodoResponse } from "../../../model";
 import type { MockResponse } from "../types";
 
-export const response200Custom: MockResponse<ListTodoResponse> = {
+export const listTodoResponse200Custom: MockResponse<ListTodoResponse> = {
   body: [
     {
       id: "1",

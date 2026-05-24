@@ -1,7 +1,7 @@
 import type { ListTodoResponse } from "../../../model";
 import type { MockResponse } from "../types";
 
-export const response200LargeTodos: MockResponse<ListTodoResponse> = {
+export const listTodoResponse200LargeTodos: MockResponse<ListTodoResponse> = {
   body: Array.from({ length: 50 }, (_, i) => ({
     id: (i + 1).toString(),
     title: `タスク ${i + 1}`,

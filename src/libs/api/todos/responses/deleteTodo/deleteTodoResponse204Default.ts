@@ -1,7 +1,7 @@
 import type { Todo } from "../../../model";
 import type { MockResponse } from "../types";
 
-export const response204Default: MockResponse<Todo> = {
+export const deleteTodoResponse204Default: MockResponse<Todo> = {
   body: {
     id: "id-0",
     title: "title-0",

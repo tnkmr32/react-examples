@@ -9,9 +9,13 @@ import {
 } from "@/libs/api/todos/todos.msw";
 import { HttpResponse, http } from "msw";
 import { Todo } from "@/libs/api/model";
-import { response200Custom } from "@/libs/api/todos/responses/listTodo/response200Custom";
-import { response200Empty } from "@/libs/api/todos/responses/listTodo/response200Empty";
-import { response200LargeTodos } from "@/libs/api/todos/responses/listTodo/response200LargeTodos";
+import { listTodoResponse200Default } from "@/libs/api/todos/responses/listTodo/listTodoResponse200Default";
+import { listTodoResponse200Custom } from "@/libs/api/todos/responses/listTodo/listTodoResponse200Custom";
+import { listTodoResponse200Empty } from "@/libs/api/todos/responses/listTodo/listTodoResponse200Empty";
+import { listTodoResponse200LargeTodos } from "@/libs/api/todos/responses/listTodo/listTodoResponse200LargeTodos";
+import { postTodoResponse200Default } from "@/libs/api/todos/responses/postTodo/postTodoResponse200Default";
+import { putTodoResponse200Default } from "@/libs/api/todos/responses/putTodo/putTodoResponse200Default";
+import { deleteTodoResponse204Default } from "@/libs/api/todos/responses/deleteTodo/deleteTodoResponse204Default";
 
 /**
  * TODOリストの一覧表示、検索、追加、編集、削除の機能を持つページコンポーネントです。
@@ -46,10 +50,10 @@ const meta: Meta<typeof TodoPage> = {
     },
     msw: {
       handlers: [
-        getListTodoMockHandler(undefined, 0),
-        getPostTodoMockHandler(undefined, 0),
-        getPutTodoMockHandler(undefined, 0),
-        getDeleteTodoMockHandler(undefined, 0),
+        getListTodoMockHandler(listTodoResponse200Default, 0),
+        getPostTodoMockHandler(postTodoResponse200Default, 0),
+        getPutTodoMockHandler(putTodoResponse200Default, 0),
+        getDeleteTodoMockHandler(deleteTodoResponse204Default, 0),
       ],
     },
   },
@@ -72,12 +76,12 @@ export const WithCustomData: Story = {
   parameters: {
     msw: {
       handlers: [
-        getListTodoMockHandler(response200Custom, 0),
+        getListTodoMockHandler(listTodoResponse200Custom, 0),
         getPostTodoMockHandler(async (info) => {
           const requestBody = (await info.request.json()) as Omit<Todo, "id">;
           return {
             body: {
-              id: (response200Custom.body.length + 1).toString(),
+              id: (listTodoResponse200Custom.body.length + 1).toString(),
               ...requestBody,
             },
             init: {
@@ -99,7 +103,7 @@ export const WithCustomData: Story = {
             },
           };
         }, 0),
-        getDeleteTodoMockHandler(undefined, 0),
+        getDeleteTodoMockHandler(deleteTodoResponse204Default, 0),
       ],
     },
   },
@@ -113,7 +117,7 @@ export const Empty: Story = {
   parameters: {
     msw: {
       handlers: [
-        getListTodoMockHandler(response200Empty, 0),
+        getListTodoMockHandler(listTodoResponse200Empty, 0),
         getPostTodoMockHandler(async (info) => {
           const requestBody = (await info.request.json()) as Omit<Todo, "id">;
           return {
@@ -140,10 +144,10 @@ export const LargeDataset: Story = {
   parameters: {
     msw: {
       handlers: [
-        getListTodoMockHandler(response200LargeTodos, 0),
-        getPostTodoMockHandler(undefined, 0),
-        getPutTodoMockHandler(undefined, 0),
-        getDeleteTodoMockHandler(undefined, 0),
+        getListTodoMockHandler(listTodoResponse200LargeTodos, 0),
+        getPostTodoMockHandler(postTodoResponse200Default, 0),
+        getPutTodoMockHandler(putTodoResponse200Default, 0),
+        getDeleteTodoMockHandler(deleteTodoResponse204Default, 0),
       ],
     },
   },
@@ -162,7 +166,7 @@ export const WithFiltering: Story = {
           const assigneeEq = url.searchParams.get("assignee_eq");
 
           if (assigneeEq) {
-            const filtered = response200Custom.body.filter(
+            const filtered = listTodoResponse200Custom.body.filter(
               (todo) => todo.assignee === assigneeEq,
             );
             return {
@@ -175,16 +179,16 @@ export const WithFiltering: Story = {
           }
 
           return {
-            body: response200Custom.body,
+            body: listTodoResponse200Custom.body,
             init: {
               status: 200,
               headers: { "Content-Type": "application/json" },
             },
           };
         }, 0),
-        getPostTodoMockHandler(undefined, 0),
-        getPutTodoMockHandler(undefined, 0),
-        getDeleteTodoMockHandler(undefined, 0),
+        getPostTodoMockHandler(postTodoResponse200Default, 0),
+        getPutTodoMockHandler(putTodoResponse200Default, 0),
+        getDeleteTodoMockHandler(deleteTodoResponse204Default, 0),
       ],
     },
   },
@@ -223,7 +227,7 @@ export const WithLongLoading: Story = {
         getListTodoMockHandler(async () => {
           await new Promise((resolve) => setTimeout(resolve, 10000));
           return {
-            body: response200Custom.body,
+            body: listTodoResponse200Custom.body,
             init: {
               status: 200,
               headers: { "Content-Type": "application/json" },

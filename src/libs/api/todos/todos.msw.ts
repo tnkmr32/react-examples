@@ -6,11 +6,11 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { ListTodoResponse, Todo } from ".././model";
-import { response200Default as listTodoResponse200Default } from "./responses/listTodo/response200Default";
-import { response200Default as postTodoResponse200Default } from "./responses/postTodo/response200Default";
-import { response200Default as putTodoResponse200Default } from "./responses/putTodo/response200Default";
-import { response204Default as deleteTodoResponse204Default } from "./responses/deleteTodo/response204Default";
-import { response200Default as getTodoResponse200Default } from "./responses/getTodo/response200Default";
+import { listTodoResponse200Default } from "./responses/listTodo/listTodoResponse200Default";
+import { postTodoResponse200Default } from "./responses/postTodo/postTodoResponse200Default";
+import { putTodoResponse200Default } from "./responses/putTodo/putTodoResponse200Default";
+import { deleteTodoResponse204Default } from "./responses/deleteTodo/deleteTodoResponse204Default";
+import { getTodoResponse200Default } from "./responses/getTodo/getTodoResponse200Default";
 import { createMockHandlerFactory } from "@/libs/api/msw/createMockHandlerFactory";
 import { createRestResourceHandlers } from "@/libs/api/msw/createRestResourceHandlers";
 
