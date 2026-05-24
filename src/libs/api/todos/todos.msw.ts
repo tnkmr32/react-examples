@@ -5,61 +5,13 @@
  * OpenAPI for example of React Cost Savings Component
  * OpenAPI spec version: 1.0.0
  */
-import { faker } from "@faker-js/faker";
 import { HttpResponse, delay, http } from "msw";
 import type { ListTodoResponse, Todo } from ".././model";
-
-export const getListTodoResponseMock = (): ListTodoResponse => [
-  {
-    id: "id-0",
-    title: "title-0",
-    description: "title-0",
-    assignee: "person-0",
-  },
-  {
-    id: "id-1",
-    title: "title-1",
-    description: "title-1",
-    assignee: "person-1",
-  },
-  {
-    id: "id-2",
-    title: "title-2",
-    description: "title-2",
-    assignee: "person-2",
-  },
-];
-
-export const getPostTodoResponseMock = (
-  overrideResponse: Partial<Todo> = {},
-): Todo => ({
-  assignee: faker.word.sample(),
-  description: faker.word.sample(),
-  id: faker.word.sample(),
-  title: faker.word.sample(),
-  ...overrideResponse,
-});
-
-export const getGetTodoResponseMock = (): Todo => ({
-  id: "id-0",
-  title: "title-0",
-  description: "title-0",
-  assignee: "person-0",
-});
-
-export const getPutTodoResponseMock = (): Todo => ({
-  id: "id-0",
-  title: "title-0",
-  description: "title-0",
-  assignee: "person-0",
-});
-
-export const getDeleteTodoResponseMock = (): Todo => ({
-  id: "id-0",
-  title: "title-0",
-  description: "title-0",
-  assignee: "person-0",
-});
+import { response200Default as listTodoResponse200Default } from "./responses/listTodo/response200Default";
+import { response200Default as postTodoResponse200Default } from "./responses/postTodo/response200Default";
+import { response200Default as putTodoResponse200Default } from "./responses/putTodo/response200Default";
+import { response204Default as deleteTodoResponse204Default } from "./responses/deleteTodo/response204Default";
+import { response200Default as getTodoResponse200Default } from "./responses/getTodo/response200Default";
 
 export const getListTodoMockHandler = (
   overrideResponse?:
@@ -77,9 +29,9 @@ export const getListTodoMockHandler = (
           ? typeof overrideResponse === "function"
             ? await overrideResponse(info)
             : overrideResponse
-          : getListTodoResponseMock(),
+          : listTodoResponse200Default.body,
       ),
-      { status: 200, headers: { "Content-Type": "application/json" } },
+      listTodoResponse200Default.init,
     );
   });
 };
@@ -100,9 +52,9 @@ export const getPostTodoMockHandler = (
           ? typeof overrideResponse === "function"
             ? await overrideResponse(info)
             : overrideResponse
-          : getPostTodoResponseMock(),
+          : postTodoResponse200Default.body,
       ),
-      { status: 200, headers: { "Content-Type": "application/json" } },
+      postTodoResponse200Default.init,
     );
   });
 };
@@ -123,9 +75,9 @@ export const getGetTodoMockHandler = (
           ? typeof overrideResponse === "function"
             ? await overrideResponse(info)
             : overrideResponse
-          : getGetTodoResponseMock(),
+          : getTodoResponse200Default.body,
       ),
-      { status: 200, headers: { "Content-Type": "application/json" } },
+      getTodoResponse200Default.init,
     );
   });
 };
@@ -146,9 +98,9 @@ export const getPutTodoMockHandler = (
           ? typeof overrideResponse === "function"
             ? await overrideResponse(info)
             : overrideResponse
-          : getPutTodoResponseMock(),
+          : putTodoResponse200Default.body,
       ),
-      { status: 200, headers: { "Content-Type": "application/json" } },
+      putTodoResponse200Default.init,
     );
   });
 };
@@ -169,12 +121,13 @@ export const getDeleteTodoMockHandler = (
           ? typeof overrideResponse === "function"
             ? await overrideResponse(info)
             : overrideResponse
-          : getDeleteTodoResponseMock(),
+          : deleteTodoResponse204Default.body,
       ),
-      { status: 204, headers: { "Content-Type": "application/json" } },
+      deleteTodoResponse204Default.init,
     );
   });
 };
+
 export const getTodosMock = () => [
   getListTodoMockHandler(),
   getPostTodoMockHandler(),
