@@ -14,6 +14,29 @@ import { response204Default as deleteTodoResponse204Default } from "./responses/
 import { response200Default as getTodoResponse200Default } from "./responses/getTodo/response200Default";
 
 /**
+ * MSWのリクエストハンドラー情報の型
+ * 全てのHTTPメソッド（get、post、put、delete）で共通の型
+ */
+type HttpMethod = (typeof http)[keyof Pick<
+  typeof http,
+  "get" | "post" | "put" | "delete"
+>];
+type MockHandlerInfo = Parameters<Parameters<HttpMethod>[1]>[0];
+
+/**
+ * モックレスポンスの型
+ * bodyとinitを持つオブジェクト形式のみ受け付ける
+ */
+type MockResponse<T> = { body: T; init: ResponseInit };
+
+/**
+ * overrideResponse の型
+ */
+type OverrideResponse<T> =
+  | MockResponse<T>
+  | ((info: MockHandlerInfo) => Promise<MockResponse<T>> | MockResponse<T>);
+
+/**
  * 共通のモックハンドラー作成関数
  * @param method HTTPメソッド
  * @param url エンドポイントURL
@@ -26,117 +49,81 @@ const createMockHandler = <T>(
   url: string,
   defaultResponse: { body: T; init: ResponseInit },
   delayTime: number = 1000,
-  overrideResponse?:
-    | T
-    | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<T> | T),
+  overrideResponse?: OverrideResponse<T>,
 ) => {
   const httpMethod = http[method];
   return httpMethod(url, async (info) => {
     await delay(delayTime);
 
-    let responseData: T;
+    let response: MockResponse<T>;
+
     if (overrideResponse !== undefined) {
       if (typeof overrideResponse === "function") {
-        responseData = await (
-          overrideResponse as (
-            info: Parameters<Parameters<typeof http.get>[1]>[0],
-          ) => Promise<T> | T
-        )(info);
+        response = await overrideResponse(info);
       } else {
-        responseData = overrideResponse;
+        response = overrideResponse;
       }
     } else {
-      responseData = defaultResponse.body;
+      response = defaultResponse;
     }
 
-    return new HttpResponse(JSON.stringify(responseData), defaultResponse.init);
+    const responseInit = response.init;
+    return new HttpResponse(JSON.stringify(response.body), responseInit);
   });
 };
 
-export const getListTodoMockHandler = (
-  overrideResponse?:
-    | ListTodoResponse
-    | ((
-        info: Parameters<Parameters<typeof http.get>[1]>[0],
-      ) => Promise<ListTodoResponse> | ListTodoResponse),
-  delayTime: number = 1000,
+/**
+ * モックハンドラー関数を生成するファクトリー
+ * @param method HTTPメソッド
+ * @param url エンドポイントURL
+ * @param defaultResponse デフォルトのモックレスポンス
+ */
+const createMockHandlerFactory = <T>(
+  method: "get" | "post" | "put" | "delete",
+  url: string,
+  defaultResponse: { body: T; init: ResponseInit },
 ) => {
-  return createMockHandler<ListTodoResponse>(
+  return (overrideResponse?: OverrideResponse<T>, delayTime: number = 1000) => {
+    return createMockHandler<T>(
+      method,
+      url,
+      defaultResponse,
+      delayTime,
+      overrideResponse,
+    );
+  };
+};
+
+export const getListTodoMockHandler =
+  createMockHandlerFactory<ListTodoResponse>(
     "get",
     "http://localhost:8080/todos",
     listTodoResponse200Default,
-    delayTime,
-    overrideResponse,
   );
-};
 
-export const getPostTodoMockHandler = (
-  overrideResponse?:
-    | Todo
-    | ((
-        info: Parameters<Parameters<typeof http.post>[1]>[0],
-      ) => Promise<Todo> | Todo),
-  delayTime: number = 1000,
-) => {
-  return createMockHandler<Todo>(
-    "post",
-    "http://localhost:8080/todos",
-    postTodoResponse200Default,
-    delayTime,
-    overrideResponse,
-  );
-};
+export const getPostTodoMockHandler = createMockHandlerFactory<Todo>(
+  "post",
+  "http://localhost:8080/todos",
+  postTodoResponse200Default,
+);
 
-export const getGetTodoMockHandler = (
-  overrideResponse?:
-    | Todo
-    | ((
-        info: Parameters<Parameters<typeof http.get>[1]>[0],
-      ) => Promise<Todo> | Todo),
-  delayTime: number = 1000,
-) => {
-  return createMockHandler<Todo>(
-    "get",
-    "http://localhost:8080/todos/:todoId",
-    getTodoResponse200Default,
-    delayTime,
-    overrideResponse,
-  );
-};
+export const getGetTodoMockHandler = createMockHandlerFactory<Todo>(
+  "get",
+  "http://localhost:8080/todos/:todoId",
+  getTodoResponse200Default,
+);
 
-export const getPutTodoMockHandler = (
-  overrideResponse?:
-    | Todo
-    | ((
-        info: Parameters<Parameters<typeof http.put>[1]>[0],
-      ) => Promise<Todo> | Todo),
-  delayTime: number = 1000,
-) => {
-  return createMockHandler<Todo>(
-    "put",
-    "http://localhost:8080/todos/:todoId",
-    putTodoResponse200Default,
-    delayTime,
-    overrideResponse,
-  );
-};
+export const getPutTodoMockHandler = createMockHandlerFactory<Todo>(
+  "put",
+  "http://localhost:8080/todos/:todoId",
+  putTodoResponse200Default,
+);
 
-export const getDeleteTodoMockHandler = (
-  overrideResponse?:
-    | Todo
-    | ((
-        info: Parameters<Parameters<typeof http.delete>[1]>[0],
-      ) => Promise<Todo> | Todo),
-  delayTime: number = 1000,
-) => {
-  return createMockHandler<Todo>(
-    "delete",
-    "http://localhost:8080/todos/:todoId",
-    deleteTodoResponse204Default,
-    delayTime,
-    overrideResponse,
-  );
-};
+export const getDeleteTodoMockHandler = createMockHandlerFactory<Todo>(
+  "delete",
+  "http://localhost:8080/todos/:todoId",
+  deleteTodoResponse204Default,
+);
 
 export const getTodosMock = () => [
   getListTodoMockHandler(),
