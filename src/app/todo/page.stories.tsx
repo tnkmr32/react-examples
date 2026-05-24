@@ -7,7 +7,7 @@ import {
   getPutTodoMockHandler,
   getDeleteTodoMockHandler,
 } from "@/libs/api/todos/todos.msw";
-import { HttpResponse } from "msw";
+import { HttpResponse, http } from "msw";
 import { Todo } from "@/libs/api/model";
 
 /**
@@ -184,7 +184,7 @@ export const WithFiltering: Story = {
 
           if (assigneeEq) {
             const filtered = customTodos.filter(
-              (todo) => todo.assignee === assigneeEq
+              (todo) => todo.assignee === assigneeEq,
             );
             return filtered;
           }
@@ -207,14 +207,14 @@ export const WithError: Story = {
   parameters: {
     msw: {
       handlers: [
-        getListTodoMockHandler(async () => {
+        http.get("http://localhost:8080/todos", () => {
           return new HttpResponse(
             JSON.stringify({ message: "Internal Server Error" }),
             {
               status: 500,
               headers: { "Content-Type": "application/json" },
-            }
-          ) as unknown as Todo[];
+            },
+          );
         }),
       ],
     },
@@ -237,4 +237,3 @@ export const WithLongLoading: Story = {
     },
   },
 };
-
