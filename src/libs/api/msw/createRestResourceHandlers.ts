@@ -79,7 +79,7 @@ export function createRestResourceHandlers<
         body: result as TListResponse,
         init: { status: 200, headers: { "Content-Type": "application/json" } },
       };
-    }, 0),
+    }, 1000),
 
     // POST /resource - 新規作成
     options.handlers.create(async (info) => {
@@ -94,7 +94,7 @@ export function createRestResourceHandlers<
         body: newEntity,
         init: { status: 200, headers: { "Content-Type": "application/json" } },
       };
-    }, 0),
+    }, 1000),
 
     // GET /resource/:id - 詳細取得
     options.handlers.get((info) => {
@@ -117,7 +117,7 @@ export function createRestResourceHandlers<
         body: entity,
         init: { status: 200, headers: { "Content-Type": "application/json" } },
       };
-    }, 0),
+    }, 1000),
 
     // PUT /resource/:id - 更新
     options.handlers.update(async (info) => {
@@ -147,7 +147,7 @@ export function createRestResourceHandlers<
         body: updatedEntity,
         init: { status: 200, headers: { "Content-Type": "application/json" } },
       };
-    }, 0),
+    }, 1000),
 
     // DELETE /resource/:id - 削除
     options.handlers.delete((info) => {
@@ -172,6 +172,6 @@ export function createRestResourceHandlers<
         body: {} as TEntity,
         init: { status: 204, headers: { "Content-Type": "application/json" } },
       };
-    }, 0),
+    }, 1000),
   ];
 }
