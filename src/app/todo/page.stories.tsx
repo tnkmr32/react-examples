@@ -9,6 +9,8 @@ import {
 } from "@/libs/api/todos/todos.msw";
 import { HttpResponse, http } from "msw";
 import { Todo } from "@/libs/api/model";
+import { response200Custom } from "@/libs/api/todos/responses/listTodo/response200Custom";
+import { response200Empty } from "@/libs/api/todos/responses/listTodo/response200Empty";
 
 /**
  * TODOリストの一覧表示、検索、追加、編集、削除の機能を持つページコンポーネントです。
@@ -55,39 +57,6 @@ const meta: Meta<typeof TodoPage> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// カスタムモックデータ
-const customTodos: Todo[] = [
-  {
-    id: "1",
-    title: "プロジェクト仕様書の作成",
-    description: "新規プロジェクトの仕様書を作成する",
-    assignee: "山田太郎",
-  },
-  {
-    id: "2",
-    title: "APIの実装",
-    description: "ユーザー登録APIを実装する",
-    assignee: "田中花子",
-  },
-  {
-    id: "3",
-    title: "テストコードの作成",
-    description: "ユニットテストとE2Eテストを作成する",
-    assignee: "山田太郎",
-  },
-  {
-    id: "4",
-    title: "デザインレビュー",
-    description: "UIデザインのレビューを実施する",
-    assignee: "佐藤次郎",
-  },
-  {
-    id: "5",
-    title: "データベース設計",
-    description: "テーブル設計とER図を作成する",
-    assignee: "田中花子",
-  },
-];
 
 /**
  * 基本的なTODOリストページのサンプル。
@@ -103,11 +72,11 @@ export const WithCustomData: Story = {
   parameters: {
     msw: {
       handlers: [
-        getListTodoMockHandler(customTodos),
+        getListTodoMockHandler(response200Custom.body),
         getPostTodoMockHandler(async (info) => {
           const body = (await info.request.json()) as Omit<Todo, "id">;
           return {
-            id: (customTodos.length + 1).toString(),
+            id: (response200Custom.body.length + 1).toString(),
             ...body,
           };
         }),
@@ -132,7 +101,7 @@ export const Empty: Story = {
   parameters: {
     msw: {
       handlers: [
-        getListTodoMockHandler([]),
+        getListTodoMockHandler(response200Empty.body),
         getPostTodoMockHandler(async (info) => {
           const body = (await info.request.json()) as Omit<Todo, "id">;
           return {
@@ -183,13 +152,13 @@ export const WithFiltering: Story = {
           const assigneeEq = url.searchParams.get("assignee_eq");
 
           if (assigneeEq) {
-            const filtered = customTodos.filter(
+            const filtered = response200Custom.body.filter(
               (todo) => todo.assignee === assigneeEq,
             );
             return filtered;
           }
 
-          return customTodos;
+          return response200Custom.body;
         }),
         getPostTodoMockHandler(),
         getPutTodoMockHandler(),
@@ -231,7 +200,7 @@ export const WithLongLoading: Story = {
       handlers: [
         getListTodoMockHandler(async () => {
           await new Promise((resolve) => setTimeout(resolve, 10000));
-          return customTodos;
+          return response200Custom.body;
         }),
       ],
     },
