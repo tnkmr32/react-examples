@@ -8,11 +8,16 @@ export default defineConfig({
       target: "openapi/generated/api.ts",
       schemas: "openapi/generated/models",
       client: "react-query",
+      httpClient: "axios",
       tsconfig: "tsconfig.json",
       mock: {
-        type: "msw",
-        baseUrl: "http://localhost:8080",
-        useExamples: true,
+        generators: [
+          {
+            type: "msw",
+            baseUrl: "http://localhost:8080",
+            useExamples: true,
+          },
+        ],
       },
       override: {
         query: {

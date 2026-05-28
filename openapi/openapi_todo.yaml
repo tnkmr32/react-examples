@@ -18,7 +18,7 @@ paths:
       parameters:
         - name: assignee_eq
           in: query
-          descripiton: フィルター条件
+          description: フィルター条件
           schema:
             type: string
       responses:
