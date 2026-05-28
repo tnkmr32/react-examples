@@ -6,7 +6,7 @@ import {
 import { Modal } from "antd";
 import React, { Dispatch, SetStateAction, useEffect } from "react";
 import { useTodoEditView } from "./page.view";
-import { Todo } from "@/libs/api/model";
+import { Todo } from "@/entities/apis/models";
 
 type Props = {
   record: Todo | null;

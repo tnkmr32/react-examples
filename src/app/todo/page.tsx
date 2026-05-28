@@ -5,7 +5,7 @@ import {
   AxInputText,
   AxQueryButton,
 } from "@/framework/components/antd";
-import { ListTodoResponse, Todo } from "@/libs/api/model";
+import { ListTodoResponse, Todo } from "@/entities/apis/models";
 import { DeleteOutlined, EditOutlined, HomeFilled } from "@ant-design/icons";
 import { Divider, Space, Table, Typography } from "antd";
 import { useRouter } from "next/navigation";

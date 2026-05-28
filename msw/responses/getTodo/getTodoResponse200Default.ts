@@ -1,11 +1,11 @@
-import type { Todo } from "../../../model";
+import type { Todo } from "../../../src/entities/apis/models";
 import type { MockResponse } from "../types";
 
-export const postTodoResponse200Default: MockResponse<Todo> = {
+export const getTodoResponse200Default: MockResponse<Todo> = {
   body: {
     id: "id-0",
     title: "title-0",
-    description: "title-0",
+    description: "description-0",
     assignee: "person-0",
   },
   init: { status: 200, headers: { "Content-Type": "application/json" } },

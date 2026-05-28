@@ -1,4 +1,4 @@
-import type { ListTodoResponse } from "../../../model";
+import type { ListTodoResponse } from "../../../src/entities/apis/models";
 import type { MockResponse } from "../types";
 
 export const listTodoResponse200Custom: MockResponse<ListTodoResponse> = {

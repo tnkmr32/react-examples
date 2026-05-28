@@ -6,16 +6,16 @@ import {
   getPostTodoMockHandler,
   getPutTodoMockHandler,
   getDeleteTodoMockHandler,
-} from "@/libs/api/todos/todos.msw";
+} from "../../../msw/todos.msw";
 import { HttpResponse, http } from "msw";
-import { Todo } from "@/libs/api/model";
-import { listTodoResponse200Default } from "@/libs/api/todos/responses/listTodo/listTodoResponse200Default";
-import { listTodoResponse200Custom } from "@/libs/api/todos/responses/listTodo/listTodoResponse200Custom";
-import { listTodoResponse200Empty } from "@/libs/api/todos/responses/listTodo/listTodoResponse200Empty";
-import { listTodoResponse200LargeTodos } from "@/libs/api/todos/responses/listTodo/listTodoResponse200LargeTodos";
-import { postTodoResponse200Default } from "@/libs/api/todos/responses/postTodo/postTodoResponse200Default";
-import { putTodoResponse200Default } from "@/libs/api/todos/responses/putTodo/putTodoResponse200Default";
-import { deleteTodoResponse204Default } from "@/libs/api/todos/responses/deleteTodo/deleteTodoResponse204Default";
+import { Todo } from "@/entities/apis/models";
+import { listTodoResponse200Default } from "../../../msw/responses/listTodo/listTodoResponse200Default";
+import { listTodoResponse200Custom } from "../../../msw/responses/listTodo/listTodoResponse200Custom";
+import { listTodoResponse200Empty } from "../../../msw/responses/listTodo/listTodoResponse200Empty";
+import { listTodoResponse200LargeTodos } from "../../../msw/responses/listTodo/listTodoResponse200LargeTodos";
+import { postTodoResponse200Default } from "../../../msw/responses/postTodo/postTodoResponse200Default";
+import { putTodoResponse200Default } from "../../../msw/responses/putTodo/putTodoResponse200Default";
+import { deleteTodoResponse204Default } from "../../../msw/responses/deleteTodo/deleteTodoResponse204Default";
 
 /**
  * TODOリストの一覧表示、検索、追加、編集、削除の機能を持つページコンポーネントです。

@@ -5,14 +5,14 @@
  * OpenAPI for example of React Cost Savings Component
  * OpenAPI spec version: 1.0.0
  */
-import type { ListTodoResponse, Todo } from ".././model";
+import type { ListTodoResponse, Todo } from "../src/entities/apis/models";
 import { listTodoResponse200Default } from "./responses/listTodo/listTodoResponse200Default";
 import { postTodoResponse200Default } from "./responses/postTodo/postTodoResponse200Default";
 import { putTodoResponse200Default } from "./responses/putTodo/putTodoResponse200Default";
 import { deleteTodoResponse204Default } from "./responses/deleteTodo/deleteTodoResponse204Default";
 import { getTodoResponse200Default } from "./responses/getTodo/getTodoResponse200Default";
-import { createMockHandlerFactory } from "@/libs/api/msw/createMockHandlerFactory";
-import { createRestResourceHandlers } from "@/libs/api/msw/createRestResourceHandlers";
+import { createMockHandlerFactory } from "./utils/createMockHandlerFactory";
+import { createRestResourceHandlers } from "./utils/createRestResourceHandlers";
 
 export const getListTodoMockHandler =
   createMockHandlerFactory<ListTodoResponse>(

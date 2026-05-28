@@ -5,8 +5,8 @@ export default defineConfig({
     output: {
       mode: "tags-split",
       clean: true,
-      target: "src/libs/generated/api.ts",
-      schemas: "src/libs/generated/model",
+      target: "openapi/generated/api.ts",
+      schemas: "openapi/generated/model",
       client: "react-query",
       tsconfig: "tsconfig.json",
       mock: {
@@ -19,7 +19,7 @@ export default defineConfig({
           useQuery: true,
         },
         mutator: {
-          path: "src/libs/backend/customInstance.ts",
+          path: "src/entities/backend/customInstance.ts",
           name: "backendCustomInstance",
         },
       },
