@@ -6,7 +6,7 @@ export default defineConfig({
       mode: "tags-split",
       clean: true,
       target: "openapi/generated/api.ts",
-      schemas: "openapi/generated/model",
+      schemas: "openapi/generated/models",
       client: "react-query",
       tsconfig: "tsconfig.json",
       mock: {
@@ -26,6 +26,9 @@ export default defineConfig({
     },
     input: {
       target: "./openapi/openapi_todo.yaml",
+    },
+    hooks: {
+      afterAllFilesWrite: "prettier --write openapi/generated",
     },
   },
 });

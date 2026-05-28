@@ -5,9 +5,9 @@
  * OpenAPI for example of React Cost Savings Component
  * OpenAPI spec version: 1.0.0
  */
-import type { ErrorResponse } from './errorResponse';
+import type { ErrorResponse } from "./errorResponse";
 
 /**
- * Not Found
+ * Conflict
  */
-export type NotFoundResponse = ErrorResponse;
+export type ConflictResponse = ErrorResponse;

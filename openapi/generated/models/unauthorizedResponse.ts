@@ -5,7 +5,7 @@
  * OpenAPI for example of React Cost Savings Component
  * OpenAPI spec version: 1.0.0
  */
-import type { ErrorResponse } from './errorResponse';
+import type { ErrorResponse } from "./errorResponse";
 
 /**
  * Unauthorized

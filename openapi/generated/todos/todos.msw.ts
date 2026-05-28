@@ -7,7 +7,7 @@
  */
 import { faker } from "@faker-js/faker";
 import { HttpResponse, delay, http } from "msw";
-import type { ListTodoResponse, Todo } from "./model";
+import type { ListTodoResponse, Todo } from ".././models";
 
 export const getListTodoResponseMock = (): ListTodoResponse => [
   {

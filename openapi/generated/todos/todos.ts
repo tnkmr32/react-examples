@@ -25,7 +25,7 @@ import type {
   NotFoundResponse,
   Todo,
   TodoRegistration,
-} from "./model";
+} from ".././models";
 import { backendCustomInstance } from "../../../src/entities/backend/customInstance";
 import type { ErrorType } from "../../../src/entities/backend/customInstance";
 
