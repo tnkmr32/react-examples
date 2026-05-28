@@ -8,9 +8,9 @@
 import type { ListTodoResponse, Todo } from "../src/entities/apis/models";
 import { listTodoResponse200Default } from "./responses/listTodo/listTodoResponse200Default";
 import { postTodoResponse200Default } from "./responses/postTodo/postTodoResponse200Default";
+import { getTodoResponse200Default } from "./responses/getTodo/getTodoResponse200Default";
 import { putTodoResponse200Default } from "./responses/putTodo/putTodoResponse200Default";
 import { deleteTodoResponse204Default } from "./responses/deleteTodo/deleteTodoResponse204Default";
-import { getTodoResponse200Default } from "./responses/getTodo/getTodoResponse200Default";
 import { createMockHandlerFactory } from "./utils/createMockHandlerFactory";
 import { createRestResourceHandlers } from "./utils/createRestResourceHandlers";
 

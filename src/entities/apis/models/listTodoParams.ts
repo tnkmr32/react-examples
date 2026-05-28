@@ -7,5 +7,5 @@
  */
 
 export type ListTodoParams = {
-assignee_eq?: string;
+  assignee_eq?: string;
 };

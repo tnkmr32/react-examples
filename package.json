@@ -10,6 +10,7 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "code-gen": "npx orval --config ./orval.config.ts",
+    "migrate-openapi": "npx ts-node .github/skills/migrate-openapi-generated/migrate.ts",
     "msw:init": "npx msw init public/ --save",
     "mockoon": "mockoon-cli start --data ./mockoon/mockoon_todo.json"
   },
