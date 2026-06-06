@@ -33,7 +33,10 @@ export default defineConfig({
       target: "./openapi/openapi_todo.yaml",
     },
     hooks: {
-      afterAllFilesWrite: "prettier --write openapi/generated",
+      afterAllFilesWrite: [
+        "prettier --write openapi/generated",
+        "npx ts-node scripts/migrate-generated-code.ts",
+      ],
     },
   },
 });

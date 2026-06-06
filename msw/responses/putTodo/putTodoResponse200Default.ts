@@ -1,4 +1,4 @@
-import type { Todo } from "../../../src/entities/apis/models";
+import type { Todo } from "@/entities/apis/models";
 import type { MockResponse } from "../types";
 
 export const putTodoResponse200Default: MockResponse<Todo> = {

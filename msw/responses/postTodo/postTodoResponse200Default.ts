@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker";
-import type { Todo } from "../../../src/entities/apis/models";
+import type { Todo } from "@/entities/apis/models";
 import type { MockResponse } from "../types";
 
 export const postTodoResponse200Default: MockResponse<Todo> = {

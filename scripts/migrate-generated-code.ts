@@ -2,8 +2,9 @@
 /**
  * OpenAPI自動生成コードの移植スクリプト
  *
- * このスクリプトは openapi/generated 配下のコードを
- * プロジェクトの適切な場所に移植し、MSWモックを書き直します。
+ * Orval の afterAllFilesWrite フックから自動実行されます。
+ * openapi/generated 配下のコードをプロジェクトの適切な場所に移植し、
+ * MSWモックを msw/utils の汎用関数を使った形式に変換します。
  */
 
 import * as fs from "node:fs";
@@ -11,10 +12,10 @@ import * as path from "node:path";
 import { fileURLToPath } from "node:url";
 import { execSync } from "node:child_process";
 
-// プロジェクトルート
+// プロジェクトルート（このスクリプトは scripts/ に配置される）
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const ROOT_DIR = path.resolve(__dirname, "../../..");
+const ROOT_DIR = path.resolve(__dirname, "..");
 
 // パス定義
 const PATHS = {
@@ -162,7 +163,7 @@ function generateResponseFile(sample: ResponseSample): string {
     ? 'import { faker } from "@faker-js/faker";\n'
     : "";
 
-  return `${fakerImport}import type { ${sample.responseType} } from "@/entities/apis/models";
+  return `${fakerImport}import type { ${sample.responseType} } from "../../../src/entities/apis/models";
 import type { MockResponse } from "../types";
 
 export const ${sample.exportName}: MockResponse<${sample.responseType}> = {
@@ -346,7 +347,7 @@ function main(): void {
 
   console.log(`📝 ${samples.length} 個のレスポンスサンプルを検出しました`);
 
-  // レスポンスファイルを生成
+  // レスポンスファイルを生成（既存のファイルは上書きしない）
   for (const sample of samples) {
     const responseDir = path.join(PATHS.mswResponses, sample.endpoint);
     if (!fs.existsSync(responseDir)) {
@@ -354,6 +355,15 @@ function main(): void {
     }
 
     const responseFilePath = path.join(responseDir, `${sample.exportName}.ts`);
+
+    // 既存のファイルがある場合はスキップ（カスタムバリアントを保護）
+    if (fs.existsSync(responseFilePath)) {
+      console.log(
+        `⏭️  Skipped (already exists): ${path.relative(ROOT_DIR, responseFilePath)}`,
+      );
+      continue;
+    }
+
     const responseContent = generateResponseFile(sample);
     fs.writeFileSync(responseFilePath, responseContent, "utf-8");
     console.log(`✓ Generated: ${path.relative(ROOT_DIR, responseFilePath)}`);
