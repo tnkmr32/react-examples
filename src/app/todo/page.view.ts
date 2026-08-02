@@ -23,11 +23,13 @@ import {
   TodoRegistration,
 } from "@/entities/apis/models";
 import {
+  getListTodoQueryKey,
   useDeleteTodo,
   useListTodo,
   usePostTodo,
   usePutTodo,
 } from "@/entities/apis/todos/todos";
+import { useQueryClient } from "@tanstack/react-query";
 
 /**
  * 一覧取得用のView
@@ -94,7 +96,7 @@ export type TodoCreateView = CsView & {
   assignee: CsInputTextItem;
   createButton: CsMutateButtonClickEvent<
     {
-      data: TodoRegistration;
+      data?: TodoRegistration;
     },
     Todo
   >;
@@ -106,6 +108,7 @@ export type TodoCreateView = CsView & {
  * @returns TodoPostView 登録用のView
  */
 export const useTodoCreateView = (): TodoCreateView => {
+  const queryClient = useQueryClient();
   return useCsView({
     title: useCsInputTextItem(
       "タイトル",
@@ -128,7 +131,16 @@ export const useTodoCreateView = (): TodoCreateView => {
       RW.Editable,
       "担当者を入力してください",
     ),
-    createButton: useCsRqAdvancedMutateButtonClickEvent(usePostTodo()),
+    createButton: useCsRqAdvancedMutateButtonClickEvent(
+      usePostTodo({
+        mutation: {
+          onSuccess: () =>
+            queryClient.invalidateQueries({
+              queryKey: getListTodoQueryKey(),
+            }),
+        },
+      }),
+    ),
   });
 };
 
@@ -143,7 +155,7 @@ export type TodoEditView = CsView & {
   updateButton: CsMutateButtonClickEvent<
     {
       todoId: string;
-      data: TodoRegistration;
+      data?: TodoRegistration;
     },
     Todo
   >;
@@ -155,6 +167,7 @@ export type TodoEditView = CsView & {
  * @returns TodoEditView 更新用のView
  */
 export const useTodoEditView = (): TodoEditView => {
+  const queryClient = useQueryClient();
   return useCsView({
     title: useCsInputTextItem(
       "タイトル",
@@ -179,7 +192,16 @@ export const useTodoEditView = (): TodoEditView => {
     ),
     // 更新対象を識別するためのID（表示はしない）
     id: useCsInputTextItem("ID", useInit(""), stringRule(false)),
-    updateButton: useCsRqAdvancedMutateButtonClickEvent(usePutTodo()),
+    updateButton: useCsRqAdvancedMutateButtonClickEvent(
+      usePutTodo({
+        mutation: {
+          onSuccess: () =>
+            queryClient.invalidateQueries({
+              queryKey: getListTodoQueryKey(),
+            }),
+        },
+      }),
+    ),
   });
 };
 
@@ -203,8 +225,18 @@ export type TodoDeleteView = CsView & {
  * @returns TodoDeleteView 削除用のView
  */
 export const useTodoDeleteView = (): TodoDeleteView => {
+  const queryClient = useQueryClient();
   return useCsView({
     id: useCsInputTextItem("ID", useInit(""), stringRule(false)),
-    deleteButton: useCsRqAdvancedMutateButtonClickEvent(useDeleteTodo()),
+    deleteButton: useCsRqAdvancedMutateButtonClickEvent(
+      useDeleteTodo({
+        mutation: {
+          onSuccess: () =>
+            queryClient.invalidateQueries({
+              queryKey: getListTodoQueryKey(),
+            }),
+        },
+      }),
+    ),
   });
 };

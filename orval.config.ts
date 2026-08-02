@@ -20,9 +20,6 @@ export default defineConfig({
         ],
       },
       override: {
-        query: {
-          useQuery: true,
-        },
         mutator: {
           path: "src/entities/backend/customInstance.ts",
           name: "backendCustomInstance",
