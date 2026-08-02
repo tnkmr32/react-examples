@@ -5,15 +5,18 @@
  * OpenAPI for example of React Cost Savings Component
  * OpenAPI spec version: 1.0.0
  */
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import type {
   DataTag,
   DefinedInitialDataOptions,
   DefinedUseQueryResult,
+  MutationFunction,
   QueryClient,
   QueryFunction,
   QueryKey,
   UndefinedInitialDataOptions,
+  UseMutationOptions,
+  UseMutationResult,
   UseQueryOptions,
   UseQueryResult,
 } from "@tanstack/react-query";
@@ -175,122 +178,73 @@ export const postTodo = (
   });
 };
 
-export const getPostTodoQueryKey = (todoRegistration?: TodoRegistration) => {
-  return ["POST", `/todos`, todoRegistration] as const;
-};
-
-export const getPostTodoQueryOptions = <
-  TData = Awaited<ReturnType<typeof postTodo>>,
+export const getPostTodoMutationOptions = <
   TError = ErrorType<BadRequestResponse>,
->(
-  todoRegistration?: TodoRegistration,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof postTodo>>, TError, TData>
-    >;
-  },
-) => {
-  const { query: queryOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ?? getPostTodoQueryKey(todoRegistration);
-
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof postTodo>>> = ({
-    signal,
-  }) => postTodo(todoRegistration, signal);
-
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof postTodo>>,
     TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData> };
+    { data?: TodoRegistration },
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postTodo>>,
+  TError,
+  { data?: TodoRegistration },
+  TContext
+> => {
+  const mutationKey = ["postTodo"];
+  const { mutation: mutationOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postTodo>>,
+    { data?: TodoRegistration }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return postTodo(data);
+  };
+
+  return { mutationFn, ...mutationOptions };
 };
 
-export type PostTodoQueryResult = NonNullable<
+export type PostTodoMutationResult = NonNullable<
   Awaited<ReturnType<typeof postTodo>>
 >;
-export type PostTodoQueryError = ErrorType<BadRequestResponse>;
+export type PostTodoMutationBody = TodoRegistration | undefined;
+export type PostTodoMutationError = ErrorType<BadRequestResponse>;
 
-export function usePostTodo<
-  TData = Awaited<ReturnType<typeof postTodo>>,
-  TError = ErrorType<BadRequestResponse>,
->(
-  todoRegistration: undefined | TodoRegistration,
-  options: {
-    query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof postTodo>>, TError, TData>
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof postTodo>>,
-          TError,
-          Awaited<ReturnType<typeof postTodo>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData>;
-};
-export function usePostTodo<
-  TData = Awaited<ReturnType<typeof postTodo>>,
-  TError = ErrorType<BadRequestResponse>,
->(
-  todoRegistration?: TodoRegistration,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof postTodo>>, TError, TData>
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof postTodo>>,
-          TError,
-          Awaited<ReturnType<typeof postTodo>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
-export function usePostTodo<
-  TData = Awaited<ReturnType<typeof postTodo>>,
-  TError = ErrorType<BadRequestResponse>,
->(
-  todoRegistration?: TodoRegistration,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof postTodo>>, TError, TData>
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
 /**
  * @summary Create todo
  */
-
-export function usePostTodo<
-  TData = Awaited<ReturnType<typeof postTodo>>,
+export const usePostTodo = <
   TError = ErrorType<BadRequestResponse>,
+  TContext = unknown,
 >(
-  todoRegistration?: TodoRegistration,
   options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof postTodo>>, TError, TData>
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof postTodo>>,
+      TError,
+      { data?: TodoRegistration },
+      TContext
     >;
   },
   queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
-  const queryOptions = getPostTodoQueryOptions(todoRegistration, options);
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData> };
-
-  return { ...query, queryKey: queryOptions.queryKey };
-}
-
+): UseMutationResult<
+  Awaited<ReturnType<typeof postTodo>>,
+  TError,
+  { data?: TodoRegistration },
+  TContext
+> => {
+  return useMutation(getPostTodoMutationOptions(options), queryClient);
+};
 /**
  * Get todo
  * @summary Get todo
@@ -439,137 +393,73 @@ export const putTodo = (
   });
 };
 
-export const getPutTodoQueryKey = (
-  todoId: string,
-  todoRegistration?: TodoRegistration,
-) => {
-  return ["PUT", `/todos/${todoId}`, todoRegistration] as const;
-};
-
-export const getPutTodoQueryOptions = <
-  TData = Awaited<ReturnType<typeof putTodo>>,
+export const getPutTodoMutationOptions = <
   TError = ErrorType<NotFoundResponse>,
->(
-  todoId: string,
-  todoRegistration?: TodoRegistration,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof putTodo>>, TError, TData>
-    >;
-  },
-) => {
-  const { query: queryOptions } = options ?? {};
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof putTodo>>,
+    TError,
+    { todoId: string; data?: TodoRegistration },
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof putTodo>>,
+  TError,
+  { todoId: string; data?: TodoRegistration },
+  TContext
+> => {
+  const mutationKey = ["putTodo"];
+  const { mutation: mutationOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
 
-  const queryKey =
-    queryOptions?.queryKey ?? getPutTodoQueryKey(todoId, todoRegistration);
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof putTodo>>,
+    { todoId: string; data?: TodoRegistration }
+  > = (props) => {
+    const { todoId, data } = props ?? {};
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof putTodo>>> = ({
-    signal,
-  }) => putTodo(todoId, todoRegistration, signal);
-
-  return {
-    queryKey,
-    queryFn,
-    enabled: todoId !== null && todoId !== undefined,
-    ...queryOptions,
-  } as UseQueryOptions<Awaited<ReturnType<typeof putTodo>>, TError, TData> & {
-    queryKey: DataTag<QueryKey, TData>;
+    return putTodo(todoId, data);
   };
+
+  return { mutationFn, ...mutationOptions };
 };
 
-export type PutTodoQueryResult = NonNullable<
+export type PutTodoMutationResult = NonNullable<
   Awaited<ReturnType<typeof putTodo>>
 >;
-export type PutTodoQueryError = ErrorType<NotFoundResponse>;
+export type PutTodoMutationBody = TodoRegistration | undefined;
+export type PutTodoMutationError = ErrorType<NotFoundResponse>;
 
-export function usePutTodo<
-  TData = Awaited<ReturnType<typeof putTodo>>,
-  TError = ErrorType<NotFoundResponse>,
->(
-  todoId: string,
-  todoRegistration: undefined | TodoRegistration,
-  options: {
-    query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof putTodo>>, TError, TData>
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof putTodo>>,
-          TError,
-          Awaited<ReturnType<typeof putTodo>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData>;
-};
-export function usePutTodo<
-  TData = Awaited<ReturnType<typeof putTodo>>,
-  TError = ErrorType<NotFoundResponse>,
->(
-  todoId: string,
-  todoRegistration?: TodoRegistration,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof putTodo>>, TError, TData>
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof putTodo>>,
-          TError,
-          Awaited<ReturnType<typeof putTodo>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
-export function usePutTodo<
-  TData = Awaited<ReturnType<typeof putTodo>>,
-  TError = ErrorType<NotFoundResponse>,
->(
-  todoId: string,
-  todoRegistration?: TodoRegistration,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof putTodo>>, TError, TData>
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
 /**
  * @summary Update todo
  */
-
-export function usePutTodo<
-  TData = Awaited<ReturnType<typeof putTodo>>,
+export const usePutTodo = <
   TError = ErrorType<NotFoundResponse>,
+  TContext = unknown,
 >(
-  todoId: string,
-  todoRegistration?: TodoRegistration,
   options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof putTodo>>, TError, TData>
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof putTodo>>,
+      TError,
+      { todoId: string; data?: TodoRegistration },
+      TContext
     >;
   },
   queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
-  const queryOptions = getPutTodoQueryOptions(
-    todoId,
-    todoRegistration,
-    options,
-  );
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData> };
-
-  return { ...query, queryKey: queryOptions.queryKey };
-}
-
+): UseMutationResult<
+  Awaited<ReturnType<typeof putTodo>>,
+  TError,
+  { todoId: string; data?: TodoRegistration },
+  TContext
+> => {
+  return useMutation(getPutTodoMutationOptions(options), queryClient);
+};
 /**
  * Delete todo
  * @summary Delete todo
@@ -582,122 +472,70 @@ export const deleteTodo = (todoId: string, signal?: AbortSignal) => {
   });
 };
 
-export const getDeleteTodoQueryKey = (todoId: string) => {
-  return ["DELETE", `/todos/${todoId}`] as const;
-};
-
-export const getDeleteTodoQueryOptions = <
-  TData = Awaited<ReturnType<typeof deleteTodo>>,
+export const getDeleteTodoMutationOptions = <
   TError = ErrorType<NotFoundResponse>,
->(
-  todoId: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof deleteTodo>>, TError, TData>
-    >;
-  },
-) => {
-  const { query: queryOptions } = options ?? {};
-
-  const queryKey = queryOptions?.queryKey ?? getDeleteTodoQueryKey(todoId);
-
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof deleteTodo>>> = ({
-    signal,
-  }) => deleteTodo(todoId, signal);
-
-  return {
-    queryKey,
-    queryFn,
-    enabled: todoId !== null && todoId !== undefined,
-    ...queryOptions,
-  } as UseQueryOptions<
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof deleteTodo>>,
     TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData> };
+    { todoId: string },
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteTodo>>,
+  TError,
+  { todoId: string },
+  TContext
+> => {
+  const mutationKey = ["deleteTodo"];
+  const { mutation: mutationOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteTodo>>,
+    { todoId: string }
+  > = (props) => {
+    const { todoId } = props ?? {};
+
+    return deleteTodo(todoId);
+  };
+
+  return { mutationFn, ...mutationOptions };
 };
 
-export type DeleteTodoQueryResult = NonNullable<
+export type DeleteTodoMutationResult = NonNullable<
   Awaited<ReturnType<typeof deleteTodo>>
 >;
-export type DeleteTodoQueryError = ErrorType<NotFoundResponse>;
 
-export function useDeleteTodo<
-  TData = Awaited<ReturnType<typeof deleteTodo>>,
-  TError = ErrorType<NotFoundResponse>,
->(
-  todoId: string,
-  options: {
-    query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof deleteTodo>>, TError, TData>
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof deleteTodo>>,
-          TError,
-          Awaited<ReturnType<typeof deleteTodo>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData>;
-};
-export function useDeleteTodo<
-  TData = Awaited<ReturnType<typeof deleteTodo>>,
-  TError = ErrorType<NotFoundResponse>,
->(
-  todoId: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof deleteTodo>>, TError, TData>
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof deleteTodo>>,
-          TError,
-          Awaited<ReturnType<typeof deleteTodo>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
-export function useDeleteTodo<
-  TData = Awaited<ReturnType<typeof deleteTodo>>,
-  TError = ErrorType<NotFoundResponse>,
->(
-  todoId: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof deleteTodo>>, TError, TData>
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
+export type DeleteTodoMutationError = ErrorType<NotFoundResponse>;
+
 /**
  * @summary Delete todo
  */
-
-export function useDeleteTodo<
-  TData = Awaited<ReturnType<typeof deleteTodo>>,
+export const useDeleteTodo = <
   TError = ErrorType<NotFoundResponse>,
+  TContext = unknown,
 >(
-  todoId: string,
   options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof deleteTodo>>, TError, TData>
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof deleteTodo>>,
+      TError,
+      { todoId: string },
+      TContext
     >;
   },
   queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
-  const queryOptions = getDeleteTodoQueryOptions(todoId, options);
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData> };
-
-  return { ...query, queryKey: queryOptions.queryKey };
-}
+): UseMutationResult<
+  Awaited<ReturnType<typeof deleteTodo>>,
+  TError,
+  { todoId: string },
+  TContext
+> => {
+  return useMutation(getDeleteTodoMutationOptions(options), queryClient);
+};
